@@ -341,14 +341,15 @@ class ScaleAdaptiveNWDCIoU(nn.Module):
 # 5. Loss patcher (must run in EVERY process: main + DDP children)
 # ============================================================================
 def install_dental_loss(s0=24.0, k=2.0, C=12.8, arch_weight=1.0, verbose=True):
-    """Patch ultralytics' BboxLoss.forward + v8DetectionLoss.__call__."""
+    """Disable DentalYOLO custom loss and keep Ultralytics' default loss."""
     from ultralytics.utils import loss as ul_loss
-    if not hasattr(ul_loss, "BboxLoss"):
-        raise RuntimeError("BboxLoss not found.")
-    if getattr(ul_loss.BboxLoss, "_dental_patched", False):
+    if hasattr(ul_loss, "BboxLoss") and getattr(ul_loss.BboxLoss, "_dental_patched", False):
+        restore_dental_loss(verbose=False)
         if verbose:
-            print("  Loss already patched, skipping.")
-        return None
+            print("  Dental loss patch removed; using default Ultralytics loss.")
+    elif verbose:
+        print("  Dental loss disabled; using default Ultralytics loss.")
+    return None
 
     BboxLoss = ul_loss.BboxLoss
     DetLoss  = ul_loss.v8DetectionLoss
