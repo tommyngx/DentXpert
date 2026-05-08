@@ -106,6 +106,8 @@ from .transformer import (
     TransformerLayer,
 )
 
+from .dental_modules import DentalC3, DentalC3TR, DentalRepC3, DentalRepConv, DentalSPPELAN
+
 __all__ = (
     "AIFI",
     "C1",
@@ -187,4 +189,9 @@ __all__ = (
     "YOLOESegment",
     "YOLOESegment26",
     "v10Detect",
+    "DentalC3",
+    "DentalC3TR",
+    "DentalRepC3",
+    "DentalRepConv",
+    "DentalSPPELAN",
 )
