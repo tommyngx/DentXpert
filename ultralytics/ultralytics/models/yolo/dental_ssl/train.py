@@ -3,7 +3,7 @@
 Example:
     python -m ultralytics.models.yolo.dental_ssl.train \
         --data /path/to/unlabeled_opg/images \
-        --model ultralytics/cfg/models/dental26ssl/dental26ssl-yolo26m.yaml \
+        --model ultralytics/cfg/models/dentalssl/dentalssl-yolo26m.yaml \
         --epochs 100 --imgsz 640 --batch 8 --device 0
 """
 
@@ -25,17 +25,16 @@ from ultralytics.utils import LOGGER, YAML
 from ultralytics.utils.torch_utils import initialize_weights, intersect_dicts, select_device
 
 IMG_SUFFIXES = {".bmp", ".dcm", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"}
-# Ultralytics resolves this scale-specific alias to dental26ssl-yolo26.yaml
+# Ultralytics resolves this scale-specific alias to dentalssl-yolo26.yaml
 # and sets scale="m" from the requested filename.
-DEFAULT_MODEL = Path(__file__).resolve().parents[3] / "cfg/models/dental26ssl/dental26ssl-yolo26m.yaml"
+DEFAULT_MODEL = Path(__file__).resolve().parents[3] / "cfg/models/dentalssl/dentalssl-yolo26m.yaml"
 
 
 def dental_ssl_yaml_load(path):
-    """Load dental26ssl YAML while preserving Ultralytics-style scale aliases.
+    """Load dentalssl YAML while preserving Ultralytics-style scale aliases.
 
-    The folder name ``dental26ssl`` contains ``26s``, which confuses the generic
-    Ultralytics scale regex. This loader resolves ``dental26ssl-yolo26m.yaml`` to
-    the base ``dental26ssl-yolo26.yaml`` and sets ``scale='m'`` explicitly.
+    This loader resolves ``dentalssl-yolo26m.yaml`` to the base
+    ``dentalssl-yolo26.yaml`` and sets ``scale='m'`` explicitly.
     """
     path = Path(path)
     if path.exists():
@@ -134,6 +133,8 @@ def save_encoder_state(path, model, decoder_index=29):
 
 
 def train(args):
+    if not args.data:
+        raise ValueError("Dental SSL training requires --data or train_dental_ssl(data=...).")
     device = select_device(args.device)
     channels = args.channels
     dataset = UnlabeledOPGDataset(args.data, imgsz=args.imgsz, channels=channels)
@@ -192,12 +193,22 @@ def train(args):
     LOGGER.info(f"SSL training complete. Outputs saved to {save_dir}")
 
 
-def parse_args():
+def train_dental_ssl(**kwargs):
+    """Notebook-friendly entrypoint for DentalYOLO26 SSL pretraining."""
+    args = parse_args(args=[])
+    for k, v in kwargs.items():
+        if not hasattr(args, k):
+            raise AttributeError(f"Unknown dental SSL training argument: {k}")
+        setattr(args, k, v)
+    return train(args)
+
+
+def parse_args(args=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data", required=True, help="Folder of unlabeled OPG images or a txt file with image paths.")
+    parser.add_argument("--data", default="", help="Folder of unlabeled OPG images or a txt file with image paths.")
     parser.add_argument("--model", default=str(DEFAULT_MODEL))
     parser.add_argument("--weights", default="", help="Optional SSL/detection checkpoint to initialize matching layers.")
-    parser.add_argument("--project", default="runs/dental26ssl")
+    parser.add_argument("--project", default="runs/dentalssl")
     parser.add_argument("--name", default="pretrain")
     parser.add_argument("--device", default="")
     parser.add_argument("--epochs", type=int, default=100)
@@ -213,7 +224,7 @@ def parse_args():
     parser.add_argument("--accumulate", type=int, default=1)
     parser.add_argument("--decoder-index", type=int, default=29)
     parser.add_argument("--amp", action="store_true")
-    return parser.parse_args()
+    return parser.parse_args(args=args)
 
 
 if __name__ == "__main__":
