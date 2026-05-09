@@ -24,6 +24,8 @@ from torch.utils.data import DataLoader, Dataset
 from ultralytics.nn.modules import MaskedReconstructionLoss, random_patch_mask
 from ultralytics.nn.tasks import BaseModel, parse_model, yaml_model_load
 from ultralytics.utils import LOGGER, YAML
+from ultralytics.utils.checks import check_model_file_from_stem
+from ultralytics.utils.downloads import attempt_download_asset
 from ultralytics.utils.patches import torch_load
 from ultralytics.utils.torch_utils import autocast, init_seeds, initialize_weights, intersect_dicts, select_device
 
@@ -180,7 +182,8 @@ def train(args):
     )
     model = DentalSSLModel(args.model, ch=channels, verbose=True).to(device)
     if args.weights:
-        ckpt = torch_load(args.weights, map_location="cpu")
+        weights = attempt_download_asset(check_model_file_from_stem(args.weights))
+        ckpt = torch_load(weights, map_location="cpu")
         model.load(ckpt)
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
