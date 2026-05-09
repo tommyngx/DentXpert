@@ -77,6 +77,7 @@ from .conv import (
     SpatialAttention,
 )
 from .dental_modules import DRELAN, LATDAA, XRayEnhanceConv
+from .dental_ssl_modules import DentalReconstructionDecoder, MaskedReconstructionLoss, random_patch_mask, ssim_loss
 from .head import (
     OBB,
     OBB26,
@@ -153,6 +154,7 @@ __all__ = (
     "DeformableTransformerDecoder",
     "DeformableTransformerDecoderLayer",
     "Detect",
+    "DentalReconstructionDecoder",
     "DRELAN",
     "Focus",
     "GhostBottleneck",
@@ -168,6 +170,7 @@ __all__ = (
     "MLPBlock",
     "MSDeformAttn",
     "MaxSigmoidAttnBlock",
+    "MaskedReconstructionLoss",
     "Pose",
     "Pose26",
     "Proto",
@@ -191,4 +194,6 @@ __all__ = (
     "YOLOESegment",
     "YOLOESegment26",
     "v10Detect",
+    "random_patch_mask",
+    "ssim_loss",
 )

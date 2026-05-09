@@ -44,6 +44,7 @@ from ultralytics.nn.modules import (
     Conv,
     Conv2,
     ConvTranspose,
+    DentalReconstructionDecoder,
     Detect,
     DRELAN,
     DWConv,
@@ -1712,6 +1713,9 @@ def parse_model(d, ch, verbose=True):
             args.insert(1, [ch[x] for x in f])  # channels as second arg
         elif m is RTDETRDecoder:  # special case, channels arg must be passed in index 1
             args.insert(1, [ch[x] for x in f])
+        elif m is DentalReconstructionDecoder:
+            args = [[ch[x] for x in f] if isinstance(f, list) else ch[f], *args]
+            c2 = args[1] if len(args) > 1 else 1
         elif m is CBLinear:
             c2 = args[0]
             c1 = ch[f]
