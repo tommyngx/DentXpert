@@ -76,7 +76,7 @@ from .conv import (
     RepConv,
     SpatialAttention,
 )
-from .dental_yolo_blocks import BiFPNLite, C3k2ECA, ECALayer, LargeKernelDWContext
+from .dental_yolo_blocks import BiFPNLite, C3k2ECA, ECALayer, LargeKernelDWContext, WeightedAddFusion
 from .dental_modules import DRELAN, LATDAA, XRayEnhanceConv
 from .dental_ssl_modules import DentalReconstructionDecoder, MaskedReconstructionLoss, random_patch_mask, ssim_loss
 from .head import (
@@ -196,6 +196,7 @@ __all__ = (
     "TransformerEncoderLayer",
     "TransformerLayer",
     "WorldDetect",
+    "WeightedAddFusion",
     "XRayEnhanceConv",
     "YOLOEDetect",
     "YOLOESegment",

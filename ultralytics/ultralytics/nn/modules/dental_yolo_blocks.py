@@ -70,3 +70,18 @@ class BiFPNLite(nn.Module):
         w = w / (w.sum() + self.eps)
         y = sum(wi * proj(x) for wi, proj, x in zip(w, self.proj, xs))
         return self.out(y)
+
+
+class WeightedAddFusion(nn.Module):
+    """Minimal weighted-add fusion: project inputs to c2 and skip the output 3x3 conv."""
+
+    def __init__(self, channels, c2):
+        super().__init__()
+        self.proj = nn.ModuleList(nn.Identity() if c == c2 else Conv(c, c2, 1, 1) for c in channels)
+        self.w = nn.Parameter(torch.ones(len(channels), dtype=torch.float32))
+        self.eps = 1e-4
+
+    def forward(self, xs):
+        w = torch.relu(self.w)
+        w = w / (w.sum() + self.eps)
+        return sum(wi * proj(x) for wi, proj, x in zip(w, self.proj, xs))

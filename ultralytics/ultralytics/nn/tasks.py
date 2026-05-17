@@ -74,6 +74,7 @@ from ultralytics.nn.modules import (
     Segment26,
     SlotAttention,
     TorchVision,
+    WeightedAddFusion,
     WorldDetect,
     XRayEnhanceConv,
     YOLOEDetect,
@@ -1695,7 +1696,7 @@ def parse_model(d, ch, verbose=True):
             args = [ch[f]]
         elif m is Concat:
             c2 = sum(ch[x] for x in f)
-        elif m is BiFPNLite:
+        elif m in {BiFPNLite, WeightedAddFusion}:
             c2 = args[0]
             c2 = make_divisible(min(c2, max_channels) * width, 8)
             args = [[ch[x] for x in f], c2, *args[1:]]
